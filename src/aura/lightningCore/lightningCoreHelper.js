@@ -4,10 +4,23 @@
 
         const component = cmp;
 
+        /**
+         * Class for checking runtime environment.
+         * Current implementations relays on if global toast event is supported.
+         */
         class Environment {
 
             constructor() {
-                this.environment = !$A.util.isUndefinedOrNull($A.get("e.force:showToast")) : 'App' : 'Community';
+                //currently there's no better way to find out the runtime environment
+                this.environment = $A.util.isUndefinedOrNull($A.get("e.force:showToast")) ? "App" : "Lightning";
+            }
+
+            isApp() {
+                return this.environment === "App";
+            }
+
+            isLightning() {
+                return this.environment === "Lightning";
             }
         }
 
@@ -19,7 +32,7 @@
             }
 
             static isGlobalShowToastSupported() {
-                return !$A.util.isUndefinedOrNull($A.get("e.force:showToast"));
+                return new Environment().isLightning();
             }
 
             fire() {
@@ -159,20 +172,20 @@
             }
 
             execute() {
-                return new LightningAction((success, error) => {
+                return new LightningAction((context, success, error) => {
                     this.action.setCallback(this, result => {
                         let state = result.getState();
                         if (state === "SUCCESS") {
-                            success(result.getReturnValue());
+                            success(context, result.getReturnValue());
                         } else {
-                            error(result);
+                            error(context, result);
                         }
                     });
                     $A.enqueueAction(this.action);
                 });
             }
 
-            parseResponseMessage(response) {
+            static parseResponseMessage(response) {
                 if ($A.util.isUndefinedOrNull(response)) {
                     return ServerAction.messageUndefinedResponse;
                 }
@@ -214,7 +227,7 @@
                         if (state === "SUCCESS") {
                             success(result.getReturnValue());
                         } else {
-                            new ToastLongError(this.parseResponseMessage(result));
+                            new ToastLongError(ServerAction.parseResponseMessage(result));
                             error(result);
                         }
                     });
@@ -257,7 +270,7 @@
                         if (state === "SUCCESS") {
                             resolve(result.getReturnValue());
                         } else {
-                            new ToastLongError(this.parseResponseMessage(result)).fire();
+                            new ToastLongError(ServerAction.parseResponseMessage(result)).fire();
                             reject(result);
                         }
                     });
@@ -268,30 +281,55 @@
 
         class LightningAction {
 
-            constructor(fn) {
-                fn(this._success, this._error);
+            constructor(action) {
+                this.action = action;
+                this._resolve();
             }
 
-            success(onSuccess) {
+            then(onSuccess) {
                 this.onSuccess = onSuccess;
+                return this;
             }
 
-            error(onError) {
+            catch(onError) {
                 this.onError = onError;
+                return this;
             }
 
             finally(onFinally) {
                 this.onFinally = onFinally;
+                return this;
             }
 
-            _success(result) {
-                this.onSuccess(result);
-                this.onFinally();
+            _success(self, result) {
+                try {
+                    if (self.onSuccess) {
+                        self.onSuccess(result);
+                    }
+                    if (self.onFinally) {
+                        self.onFinally();
+                    }
+                } catch (e) {
+                    self._error(e);
+                }
             }
 
             _error(error) {
-                this.onError(error);
-                this.onFinally();
+                if (self.onError) {
+                    self.onError(error);
+                } else {
+                    console.error(`Core:\nUnhandled error in Lightning Action: ${error}\n`);
+                }
+                if (self.onFinally) {
+                    self.onFinally();
+                }
+            }
+            
+            _resolve() {
+                const self = this;
+                window.setTimeout($A.getCallback(() => {
+                    this.action(self, this._success, this._error);
+                }, 0));
             }
         }
 
@@ -439,65 +477,6 @@
                     a.href = window.URL.createObjectURL(this.fileData);
                     a.click();
                 }
-            }
-        }
-
-        /* classes for working with cookies */
-        class Cookie {
-
-            constructor(name, value, options) {
-                this.name = name;
-                this.options = options;
-                this.value = value;
-            }
-
-            get() {
-                const matches = document.cookie.match(new RegExp(
-                    "(?:^|; )" + this.name.replace(/([.$?*|{}()\[\]\\\/+^])/g, "\\$1") + "=([^;]*)"
-                ));
-
-                return matches ? decodeURIComponent(matches[1]) : undefined;
-            }
-
-            exist() {
-                return !!this.get();
-            }
-
-            set() {
-                let options = this.options,
-                    expires = options.expires;
-
-                if (expires && typeof expires === "number") {
-                    const d = new Date();
-                    d.setTime(d.getTime() + expires * 1000);
-                    expires = options.expires = d;
-                }
-                if (expires && expires.toUTCString) {
-                    options.expires = expires.toUTCString();
-                }
-
-                let value = encodeURIComponent(this.value);
-
-                let updatedCookie = this.name + "=" + value;
-
-                for (const propName in options) {
-                    updatedCookie += "; " + propName;
-                    const propValue = options[propName];
-                    if (propValue !== true) {
-                        updatedCookie += "=" + propValue;
-                    }
-                }
-
-                document.cookie = updatedCookie;
-            }
-
-            destroy() {
-                this.options = {
-                    expires: -1
-                };
-                this.value = "";
-
-                this.set();
             }
         }
 
@@ -912,8 +891,11 @@
                 return this;
             }
 
-            fire() {
+            show() {
                 try {
+                    if (new Environment().isApp()) {
+                        throw new Error("lightning:notificationsLibrary is not supported in App");
+                    }
                     this.library.showNotice(this.params);
                 } catch (e) {
                     console.error(`Core:\nRunning lightning:notificationsLibrary -> showNotice() raised an exception:\n${e}`)
@@ -930,6 +912,9 @@
 
             fire() {
                 try {
+                    if (new Environment().isApp()) {
+                        throw new Error("lightning:notificationsLibrary is not supported in App");
+                    }
                     this.library.showToast(this.params);
                 } catch (e) {
                     console.error(`Core:\nRunning lightning:notificationsLibrary -> showToast() raised an exception:\n${e}`)
@@ -941,7 +926,7 @@
 
             constructor(type, title, message) {
                 super({
-                    "type": type,
+                    "variant": type,
                     "title": title,
                     "message": message,
                     "mode": "dismissible",
@@ -1012,8 +997,8 @@
 
             constructor(body = null, footer = null) {
                 super("lightning:overlayLibrary");
-                this.setBody(component);
-                this.setFooter(component);
+                this.setBody(body);
+                this.setFooter(footer);
             }
 
             setBody(body = null) {
@@ -1049,6 +1034,9 @@
             }
 
             show() {
+                if (new Environment().isApp()) {
+                    throw new Error(`Core:\nlightning:overlayLibrary is not supported in App`);
+                }
                 const components = new Components();
                 if (this.body !== null) {
                     components.addComponent(this.body);
@@ -1057,9 +1045,9 @@
                     components.addComponent(this.footer);
                 }
 
-                components.create()
-                    .then((components) => {
-                        if (status === "SUCCESS") {
+                return new LightningPromise((resolve, reject) => {
+                    components.create()
+                        .then((components) => {
                             let body = null;
                             let footer = null;
                             if(components.length === 1) {
@@ -1069,16 +1057,17 @@
                                 footer = components[1];
                             }
                             try {
-                                return this.library.showCustomModal(this.toParams(body, footer));
+                                resolve(this.library.showCustomModal(this.toParams(body, footer)));
                             } catch (e) {
                                 console.error(`Core:\nRunning lightning:overlayLibrary -> showCustomModal() raised an exception:\n${e}`)
-                                return "";
+                                reject(e)
                             }
-                        }
-                    })
-                    .catch((error) => {
-                        console.warn(`Core:\nCreating component(s) for modal raised an exception:\n${error}`);
-                    });
+                        })
+                        .catch((error) => {
+                            console.error(`Core:\nCreating component(s) for modal raised an exception:\n${error}`);
+                            reject(error)
+                        });
+                })
             }
 
             toParams(body, footer) {
@@ -1093,11 +1082,78 @@
             }
 
             _checkAttribute(component) {
-                if (component && !(component instanceof "Component")) {
-                    const message = "Core:\nArgument must be of type core.Component.\n";
+                if (component && !(component instanceof Component)) {
+                    const message = `Core:\nArgument must be of type core.Component.\n`;
                     console.error(message);
                     throw new Error(message);
                 }
+            }
+        }
+
+        /* "Abstract" class for storage objects*/
+        class Storage {
+
+            constructor(sourceName) {
+                this.domain = new URL(window.location).origin;
+                this.source = window[sourceName];
+            }
+
+            getDomain() {
+                return this.domain;
+            }
+
+            get(name) {
+                return this.source.getItem(name);
+            }
+
+            getObject(name) {
+                return JSON.parse(this.get(name));
+            }
+
+            getAll() {
+                return this.source;
+            }
+
+            set(name, value) {
+                this.source.setItem(name, value);
+            }
+
+            setObject(name, value) {
+                this.source.setItem(name, JSON.stringify(value));
+            }
+
+            has(name) {
+                return !$A.util.isUndefinedOrNull(this.get(name));
+            }
+
+            remove(name) {
+                delete this.source[name];
+            }
+
+            clear() {
+                this.source.clear();
+            }
+
+            print() {
+                console.log(`${this.source} for ${this.getDomain()}`);
+                const keys = Object.keys(localStorage);
+                for(let key of keys) {
+                    console.log(`${key}: ${this.get(key)}`);
+                }
+            }
+        }
+
+        class LocalStorage extends Storage {
+
+            constructor() {
+                super("localStorage");
+            }
+        }
+
+        class SessionStorage extends Storage {
+
+            constructor() {
+                super("sessionStorage")
             }
         }
 
@@ -1147,7 +1203,11 @@
             "PageReferenceWebPage": PageReferenceWebPage,
 
             /* modal */
-            "Modal": Modal
+            "Modal": Modal,
+
+            /*Storages*/
+            "LocalStorage": LocalStorage,
+            "SessionStorage": SessionStorage
         };
 
         return {
