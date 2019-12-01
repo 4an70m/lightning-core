@@ -130,5 +130,5 @@ new core.Components()
 	});
 ```
 
-##ToDo
+## ToDo
 - Complete readme
