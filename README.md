@@ -57,16 +57,16 @@ new core.ToastLong(type, title, message).fire();
 
 
 /*defaults mode to dismissable, type to success, title to Success!, time to 4s*/
-new core.ToastQuickSuccess(type, title, message).fire();
+new core.ToastQuickSuccess(message).fire();
 
 /*defaults mode to dismissable, type to error, title to Something went wrong!, time to 4s*/
-new core.ToastQuickError(type, title, message).fire();
+new core.ToastQuickError(message).fire();
 
 /*defaults mode to dismissable, type to success, title to Success!, time to 8s*/
-new core.ToastLongSuccess(type, title, message).fire();
+new core.ToastLongSuccess(message).fire();
 
 /*defaults mode to dismissable, type to error, title to Something went wrong!, time to 8s*/
-new core.ToastLongError(type, title, message).fire();
+new core.ToastLongError(message).fire();
 ```
 The classes can be configured for each project independenlty and updated with default time, message, etc.
 
