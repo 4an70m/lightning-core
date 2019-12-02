@@ -144,11 +144,13 @@
                 if (actionName.indexOf("c.") <= -1) {
                     actionName = "c." + actionName;
                 }
+                let action = null;
 
-                const action = cmp.get(actionName);
-                if ($A.util.isUndefinedOrNull(action)) {
-                    console.error(`${actionName} is invalid action.`);
-                    return;
+                try {
+                    action = cmp.get(actionName);
+                } catch(error) {
+                    console.error(`\nCore:\n${actionName} is invalid action.\n + ${error}`);
+                    return action;
                 }
 
                 if (!$A.util.isUndefinedOrNull(params)) {
