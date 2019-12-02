@@ -121,9 +121,6 @@
 
             constructor(component, action, params) {
                 this.action = ServerAction.getAction(component, action, params);
-                if (!this.action) {
-                    console.error(`${action} action was not found`);
-                }
             }
 
             /* Override these messages with labels, if you support multiple languages */
