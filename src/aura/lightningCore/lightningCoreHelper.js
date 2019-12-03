@@ -1089,6 +1089,41 @@
             }
         }
 
+        class Popover extends Library {
+
+            constructor() {
+                super("lightning:overlayLibrary");
+            }
+
+            setBody(body) {
+                this.body = body;
+            }
+
+            setReferenceSelector(referenceElementSelector) {
+                this.referenceElementSelector = referenceElementSelector;
+            }
+
+            setCssClass(cssClassList) {
+                this.cssClassList = cssClassList;
+            }
+
+            show() {
+                if (new Environment().isApp()) {
+                    throw new Error(`Core:\nlightning:overlayLibrary is not supported in App`);
+                }
+
+                return this.library.showCustomPopover(this.toParams());
+            }
+
+            toParams() {
+                return {
+                    body: this.body || "",
+                    referenceSelector: this.referenceElementSelector,
+                    cssClass: this.cssClassList
+                };
+            }
+        }
+
         /* "Abstract" class for storage objects*/
         class Storage {
 
