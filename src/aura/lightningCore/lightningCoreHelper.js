@@ -149,7 +149,7 @@
                 try {
                     action = cmp.get(actionName);
                 } catch(error) {
-                    console.error(`Core:\n${actionName} is invalid action.\n + ${error}`);
+                    console.error(`\nCore:\n${actionName} is invalid action.\n + ${error}`);
                     return action;
                 }
 
@@ -157,6 +157,17 @@
                     action.setParams(params);
                 }
                 return action;
+            }
+
+            addParam(name, param) {
+                if (this.params) {
+                    this.params = {};
+                }
+                this.params[name] = param;
+            }
+
+            removeParam(name) {
+                delete this.params[name];
             }
 
             execute() {
@@ -875,7 +886,7 @@
             }
 
             setCallback(closeCallback) {
-                this.params.title = closeCallback;
+                this.params.closeCallback = closeCallback;
                 return this;
             }
 
@@ -1086,17 +1097,14 @@
 
             setBody(body) {
                 this.body = body;
-                return this;
             }
 
             setReferenceSelector(referenceElementSelector) {
                 this.referenceElementSelector = referenceElementSelector;
-                return this;
             }
 
             setCssClass(cssClassList) {
                 this.cssClassList = cssClassList;
-                return this;
             }
 
             show() {
