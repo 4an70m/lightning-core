@@ -1193,6 +1193,9 @@
 
         const core = {
 
+            /* class for files*/
+            "File": File,
+
             /* classes for creating toasts */
             "Toast": Toast,
             "ToastQuick": ToastQuick,
