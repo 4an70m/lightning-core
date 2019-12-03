@@ -1086,14 +1086,17 @@
 
             setBody(body) {
                 this.body = body;
+                return this;
             }
 
             setReferenceSelector(referenceElementSelector) {
                 this.referenceElementSelector = referenceElementSelector;
+                return this;
             }
 
             setCssClass(cssClassList) {
                 this.cssClassList = cssClassList;
+                return this;
             }
 
             show() {
