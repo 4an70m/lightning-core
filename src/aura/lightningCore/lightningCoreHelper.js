@@ -447,7 +447,7 @@
 
             toBlob() {
                 let sliceSize = 512;
-                let byteCharacters = atob(b64Data);
+                let byteCharacters = atob(this.fileData);
                 let byteArrays = [];
                 for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
                     let slice = byteCharacters.slice(offset, offset + sliceSize);
@@ -468,14 +468,12 @@
                 a.target = "_blank";
 
                 if (this.fileData instanceof Blob) {
-                    this.toBase64().then((data) => {
-                        a.href = window.URL.createObjectURL(data);
-                        a.click();
-                    })
-                } else {
                     a.href = window.URL.createObjectURL(this.fileData);
-                    a.click();
+                } else {
+                    a.href = this.toBlob();
                 }
+                a.click();
+
             }
         }
 
