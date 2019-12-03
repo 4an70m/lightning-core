@@ -159,17 +159,6 @@
                 return action;
             }
 
-            addParam(name, param) {
-                if (this.params) {
-                    this.params = {};
-                }
-                this.params[name] = param;
-            }
-
-            removeParam(name) {
-                delete this.params[name];
-            }
-
             execute() {
                 return new LightningAction((context, success, error) => {
                     this.action.setCallback(this, result => {
