@@ -309,11 +309,11 @@
                         self.onFinally();
                     }
                 } catch (e) {
-                    self._error(e);
+                    self._error(self, e);
                 }
             }
 
-            _error(error) {
+            _error(self, error) {
                 if (self.onError) {
                     self.onError(error);
                 } else {
