@@ -220,14 +220,14 @@
             }
 
             execute() {
-                return new LightningAction((success, error) => {
+                return new LightningAction((context, success, error) => {
                     this.action.setCallback(this, result => {
                         let state = result.getState();
                         if (state === "SUCCESS") {
-                            success(result.getReturnValue());
+                            success(context, result.getReturnValue());
                         } else {
                             new ToastLongError(ServerAction.parseResponseMessage(result));
-                            error(result);
+                            error(context, result);
                         }
                     });
                     $A.enqueueAction(this.action);
