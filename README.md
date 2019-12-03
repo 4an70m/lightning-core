@@ -57,16 +57,16 @@ new core.ToastLong(type, title, message).fire();
 
 
 /*defaults mode to dismissable, type to success, title to Success!, time to 4s*/
-new core.ToastQuickSuccess(message).fire();
+new core.ToastQuickSuccess(type, title, message).fire();
 
 /*defaults mode to dismissable, type to error, title to Something went wrong!, time to 4s*/
-new core.ToastQuickError(message).fire();
+new core.ToastQuickError(type, title, message).fire();
 
 /*defaults mode to dismissable, type to success, title to Success!, time to 8s*/
-new core.ToastLongSuccess(message).fire();
+new core.ToastLongSuccess(type, title, message).fire();
 
 /*defaults mode to dismissable, type to error, title to Something went wrong!, time to 8s*/
-new core.ToastLongError(message).fire();
+new core.ToastLongError(type, title, message).fire();
 ```
 The classes can be configured for each project independenlty and updated with default time, message, etc.
 
@@ -130,5 +130,121 @@ new core.Components()
 	});
 ```
 
-## ToDo
+### Use-cases: Modals
+Creating modals is usually also a drag. With lightning-dml creating modals is as easy as creating component. But! Modals are created based on the `lightning:overlayLibrary`. To use this library in lightning-core component you need to include this library into your instance of the library - simply include a library instance into the markup between opening and closing tags of `<c:lightningCore>`:
+
+```html
+<aura:component>
+	<c:lightningCore>
+		<lightning:overlayLibrary/>
+	</c:lightningCore>
+	<!--other code...-->
+</aura:component>
+```
+After that, you can use any supported functionality for the library, for example - Modal creation.
+```javascript
+new core.Modal()
+	.setBody(new Component(name, params))
+	.setFooter(new Component(name, params))
+	.show()
+		.then((overlay) => {
+			/*success callback*/
+		})
+		.catch((error) => {
+			/*error callback*/
+		});
+```
+
+### Use-cases: Files
+There's a small class for downloading files, instantiated from base64 or Blob.
+```javascript
+/*new file*/
+new core.File(base64Data);
+new core.File(blobData);
+
+/*converting file*/
+new core.File(blobData).toBase64();
+new core.File(base64Data).toBlob();
+
+/*downlaoding*/
+new core.File(base64Data).download(filename);
+new core.File(blobData).download(filename);
+```
+
+### Use-cases: Local/Session Storage
+There's a small class for working with local or session storage.
+```javascript
+const storage = new core.LocalStorage(); 
+//or new core.SessionStorage() - can be used instead, both classes has identical interface
+storage.set('key1', 'value');
+storage.setObject('key2', {'object-key': 'object-value'}); //performs JSON.stringify(...)
+
+storage.get('key1');
+storage.getObject('key2'); //performs JSON.parse(...)
+
+storage.clear();
+storage.print();
+```
+
+### Use-cases: Libraries
+As was mentioned before in the Modals section, to work with a library and it's functionality you need to include library markup into the body of lightning-core component:
+```html
+<aura:component>
+	<!--currently supported libraries-->
+	<c:lightningCore>
+		<lightning:overlayLibrary/>
+		<lightning:navigation/>
+		<lightning:notificationsLibrary/>
+	</c:lightningCore>
+	<!--other code...-->
+</aura:component>
+```
+Functionality which is supported through these libraries:
+- Page reference navigation (lightning:navigation)
+- Notices and Toasts (lightning:notificationsLibrary)
+- Modals and Popovers (lightning:overlayLibrary)
+
+Examples:
+```javascript
+/*Navigation*/
+const navigation = new core.Navigation();
+navigation.navigate(new core.PageReferenceWebPage().setUrl(url));
+
+/*Notice*/
+new core.Notice()
+	.setTitle(title)
+	.setMessage(message)
+	.show();
+
+/*Toast - toasts has the same classes, as regular toast, but it has X in it's name. E.g.*/
+new core.ToastXLongError(message).fire();
+
+/*Modal*/
+new core.Modal()
+	.setBody(new Component(name, params))
+	.setFooter(new Component(name, params))
+	.show()
+		.then((overlay) => {
+			/*success callback*/
+		})
+		.catch((error) => {
+			/*error callback*/
+		});
+
+/*Popover*/
+new core.Popover()
+	.setBody(body)
+	.setReferenceSelector(referenceElementSelector)
+	.show()
+	.then((overlay) => {
+			/*success callback*/
+		})
+		.catch((error) => {
+			/*error callback*/
+		});
+```
+
+
+
+##ToDo
 - Complete readme
