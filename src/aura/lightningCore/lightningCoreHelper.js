@@ -1238,6 +1238,7 @@
 
             /* modal */
             "Modal": Modal,
+            "Popover": Popover,
 
             /*Storages*/
             "LocalStorage": LocalStorage,
