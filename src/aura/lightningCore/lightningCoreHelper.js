@@ -885,7 +885,7 @@
                 return this;
             }
 
-            setCallback(closeCallback) {
+            setCloseCallback(closeCallback) {
                 this.params.closeCallback = closeCallback;
                 return this;
             }
@@ -895,7 +895,7 @@
                     if (new Environment().isApp()) {
                         throw new Error("lightning:notificationsLibrary is not supported in App");
                     }
-                    this.library.showNotice(this.params);
+                    return this.library.showNotice(this.params);
                 } catch (e) {
                     console.error(`Core:\nRunning lightning:notificationsLibrary -> showNotice() raised an exception:\n${e}`)
                 }
