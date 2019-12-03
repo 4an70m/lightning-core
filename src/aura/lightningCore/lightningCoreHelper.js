@@ -149,7 +149,7 @@
                 try {
                     action = cmp.get(actionName);
                 } catch(error) {
-                    console.error(`\nCore:\n${actionName} is invalid action.\n + ${error}`);
+                    console.error(`Core:\n${actionName} is invalid action.\n + ${error}`);
                     return action;
                 }
 
