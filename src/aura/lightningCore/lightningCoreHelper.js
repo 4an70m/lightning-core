@@ -2091,11 +2091,8 @@
         }
 
         const core = {
-
-            /* class for files*/
             "File": File,
 
-            /* classes for creating toasts */
             "Toast": Toast,
             "ToastQuick": ToastQuick,
             "ToastLong": ToastLong,
@@ -2104,7 +2101,6 @@
             "ToastLongSuccess": ToastLongSuccess,
             "ToastLongError": ToastLongError,
 
-            /* classes for creating toasts through notifications library*/
             "Notice": Notice,
             "ToastX": ToastX,
             "ToastXQuick": ToastXQuick,
@@ -2115,18 +2111,17 @@
             "ToastXLongError": ToastXLongError,
 
 
-            /* classes for server interactions */
             "ServerAction": ServerAction,
             "ServerActionHandled": ServerActionHandled,
             "ServerActionPromise": ServerActionPromise,
             "ServerActionPromiseHandled": ServerActionPromiseHandled,
             "LightningPromise": LightningPromise,
 
-            /* components creation */
+
             "Component": Component,
             "Components": Components,
 
-            /* navigation */
+
             "Navigation": Navigation,
             "PageReferenceStandardComponent": PageReferenceStandardComponent,
             "PageReferenceCommLoginPage": PageReferenceCommLoginPage,
@@ -2138,11 +2133,11 @@
             "PageReferenceRecordRelationshipPage": PageReferenceRecordRelationshipPage,
             "PageReferenceWebPage": PageReferenceWebPage,
 
-            /* modal */
+
             "Modal": Modal,
             "Popover": Popover,
 
-            /*Storages*/
+
             "LocalStorage": LocalStorage,
             "SessionStorage": SessionStorage
         };
