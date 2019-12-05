@@ -32,6 +32,7 @@
             }
         }
 
+
         /* classes for creating toasts */
         /**
          * Simple class for creation toasts.<br/>
@@ -262,6 +263,7 @@
                 );
             }
         }
+
 
         /* classes for server interactions */
         /**
@@ -641,6 +643,7 @@
             }
         }
 
+
         /* classes for component creation*/
         /**
          * Class, which represents a container for a single component<br/>
@@ -756,6 +759,7 @@
             }
         }
 
+
         /* classes for working with files */
         /**
          * Files wrapper class, built for convenient conversion and downloading of a file
@@ -835,6 +839,7 @@
             }
         }
 
+
         /* library class */
         /**
          * Class, which represents a dependency to a specific library<br/>
@@ -855,6 +860,7 @@
                 }
             }
         }
+
 
         /* classes to work with lightning:navigation */
         /**
@@ -1394,6 +1400,7 @@
             }
         }
 
+
         /* classes to work with lightning:notificationsLibrary */
         /**
          * Creates a notice object, based on lightning:notificationsLibrary
@@ -1729,6 +1736,7 @@
             }
         }
 
+
         /* classes to work with lightning:overlayLibrary */
         /**
          * Creates a Modal with lightning:overlayLibrary
@@ -1960,6 +1968,7 @@
                 };
             }
         }
+
 
         /* classes to work with browser storage */
         /**
