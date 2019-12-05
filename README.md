@@ -246,5 +246,8 @@ new core.Popover()
 
 
 
-##ToDo
+## ToDo
 - Complete readme
+- Complete JS Docs
+- Add more functions
+- Allow painless extensions
