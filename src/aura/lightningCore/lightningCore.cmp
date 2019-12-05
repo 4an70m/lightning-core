@@ -1,5 +1,4 @@
 <aura:component description="component for providing useful methods for day-to-day operations."
                 access="global" extensible="false">
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
-    {!v.body}
 </aura:component>
