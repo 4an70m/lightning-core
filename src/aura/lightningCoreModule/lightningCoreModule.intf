@@ -1,0 +1,4 @@
+<aura:interface description="lightningCoreModule">
+    <aura:method name="export" action="{!c.export}" access="public"
+                 description="Method, which should return an object with exported classes in such format: [moduleName, {module classes}]"/>
+</aura:interface>

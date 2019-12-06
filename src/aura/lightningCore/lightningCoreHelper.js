@@ -2154,6 +2154,28 @@
         return {
             init: () => {
                 if ($A.util.isUndefinedOrNull(window.core)) {
+                    const body = cmp.get("v.body");
+                    body.filter(component => {
+                            return component.isInstanceOf("c:lightningCoreModule");
+                        })
+                        .forEach(module => {
+                            let exported = null;
+                            try {
+                                exported = module.export()
+                            } catch (e) {
+                                console.error(`Core:\nModule ${module.getName()} does not implement export method\n${e}`);
+                                return;
+                            }
+                            if (!exported || !Array.isArray(exported) || exported.length !== 2 || typeof exported[0] !== 'string') {
+                                console.error(`Core:\nModule ${module.getName()} has wrong return format.\nReturn format should be [module_name, {exported_classes}]`);
+                                return;
+                            }
+                            if (core[exported[0]]) {
+                                console.error(`Core:\n${exported[0]} namespace from module ${module.getName()} is already defined in lightning-core. Please, consider other module name`);
+                                return;
+                            }
+                            core[exported[0]] = exported[1];
+                        });
                     Object.defineProperty(window, "core", {
                         writable: false,
                         configurable: false,
