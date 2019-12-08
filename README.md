@@ -8,6 +8,7 @@ lightning-core is a small library to use features of lightning in es6 style. It 
 - Downloading files
 - Working with local/session storage
 - Working with libraries (overlay, navigation, notification)
+- Extension Modules
 
 ## Why do I need this?
 Lots of projects I've ran into has either custom library-like component or JS resource file or they are stuck with each component defining a "new solution" for each pain-point, e.g. method for creating a Toast in every single component.
@@ -17,7 +18,7 @@ The purpose of this library component is to stop this madness.
 Lightnig is still something viable for a new project or for refactoring an old one and, I guess, will be for a couple more years, considering how many beautiful and functional things are already created for it.
 
 ## How to use?
-The library is really simple and intuitive to use. You add it onse in the top level component, it immutably writes itself into the window object and after that you can use it anywhere. The variable in the window object is setted only once in a singleton manner, so don't worry if you reference the library somwhere else in your component hierarchy - the top-level lightning-dml component will initiallize first.
+The library is really simple and intuitive to use. You add it onse in the top level component, it immutably writes itself into the window object and after that you can use it anywhere. The variable in the window object is setted only once in a singleton manner, so don't worry if you reference the library somwhere else in your component hierarchy - the top-level lightning-core component will initiallize first.
 
 Start with:
 ```html
@@ -131,7 +132,7 @@ new core.Components()
 ```
 
 ### Use-cases: Modals
-Creating modals is usually also a drag. With lightning-dml creating modals is as easy as creating component. But! Modals are created based on the `lightning:overlayLibrary`. To use this library in lightning-core component you need to include this library into your instance of the library - simply include a library instance into the markup between opening and closing tags of `<c:lightningCore>`:
+Creating modals is usually also a drag. With lightning-core creating modals is as easy as creating component. But! Modals are created based on the `lightning:overlayLibrary`. To use this library in lightning-core component you need to include this library into your instance of the library - simply include a library instance into the markup between opening and closing tags of `<c:lightningCore>`:
 
 ```html
 <aura:component>
@@ -243,8 +244,58 @@ new core.Popover()
 			/*error callback*/
 		});
 ```
+### Use-case: Extension Modules
+If you would like to add new functions, custom libraries or even submodules to the lightning-core library, you can easily do this, by implementing lightningCoreModule interface in your custom component, writing logic for export() method and including your custom component into lightning-core body.
+First, create a module and implement interface and export method:
+```html
+<!--Your custom module-->
+<aura:component description="AlertModule" implements="c:lightningCoreModule">
+</aura:component>
+```
 
+```javascript
+({
+	//Controller
+	//implementation of interface method
+	export: function(cmp, evt, helper) {
+		return helper.exportClasses();
+	},
+	
+	//Helper
+	exportClasses: function() {
+		class AlertToast {
+			constructor(message) {
+				this.message = message;
+			}
 
+			fire() {
+				alert(this.message);
+			}
+		}
+		
+		//returning value should always be an array in this format: 
+		//[module_name, {exported_classes}]
+		return ['alerts', {
+			"AlertToast": AlertToast
+		}];
+	},
+});
+```
+Finally, after you include your module into lightning-core body, you may start using it everywhere lightning-core is available:
+```html
+<aura:component>
+	<!--currently supported libraries-->
+	<c:lightningCore>
+		<c:AlertModule/>
+	</c:lightningCore>
+	<!--other code...-->
+</aura:component>
+```
+Usage:
+```javascript
+new core.alerts.AlertToast('My message').fire();
+```
+Lightning-core will perform a check if you've implemented export() method, if you've returned a propperly formatted value and if your submodule name overwrites any other functions/submodules. If any error occures, lightning-core will display an error message in error logs.
 
 ## ToDo
 - Complete readme
