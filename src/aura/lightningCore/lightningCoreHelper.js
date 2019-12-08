@@ -344,7 +344,7 @@
 
                 try {
                     action = cmp.get(actionName);
-                } catch(error) {
+                } catch (error) {
                     console.error(`\nCore:\n${actionName} is invalid action.\n + ${error}`);
                     return action;
                 }
@@ -585,7 +585,7 @@
                     self.onFinally();
                 }
             }
-            
+
             _resolve() {
                 const self = this;
                 window.setTimeout($A.getCallback(() => {
@@ -876,7 +876,7 @@
             /**
              * Navigation with a PageReference classes<br/>
              * Supports a preNavigateCallback function, which is executed after url is generated, but before the navigation occurs.<br/>
-             * 
+             *
              * @see PageReference
              * @param pageReference
              * @param preNavigateCallback
@@ -889,7 +889,7 @@
                 }
                 this.library.generateUrl(pageReference.toPageReference())
                     .then($A.getCallback((url) => {
-                        if(preNavigateCallback) {
+                        if (preNavigateCallback) {
                             url = preNavigateCallback(url);
                         }
                         this.library.navigate(url);
@@ -2073,7 +2073,7 @@
             print() {
                 console.log(`Storage for ${this.getDomain()}`);
                 const keys = Object.keys(localStorage);
-                for(let key of keys) {
+                for (let key of keys) {
                     console.log(`${key}: ${this.get(key)}`);
                 }
             }
@@ -2151,40 +2151,47 @@
             "SessionStorage": SessionStorage
         };
 
-        return {
-            init: () => {
-                if ($A.util.isUndefinedOrNull(window.core)) {
-                    const body = cmp.get("v.body");
-                    body.filter(component => {
-                            return component.isInstanceOf("c:lightningCoreModule");
-                        })
-                        .forEach(module => {
-                            let exported = null;
-                            try {
-                                exported = module.export()
-                            } catch (e) {
-                                console.error(`Core:\nModule ${module.getName()} does not implement export method\n${e}`);
-                                return;
-                            }
-                            if (!exported || !Array.isArray(exported) || exported.length !== 2 || typeof exported[0] !== 'string') {
-                                console.error(`Core:\nModule ${module.getName()} has wrong return format.\nReturn format should be [module_name, {exported_classes}]`);
-                                return;
-                            }
-                            if (core[exported[0]]) {
-                                console.error(`Core:\n${exported[0]} namespace from module ${module.getName()} is already defined in lightning-core. Please, consider other module name`);
-                                return;
-                            }
-                            core[exported[0]] = exported[1];
-                        });
-                    Object.defineProperty(window, "core", {
-                        writable: false,
-                        configurable: false,
-                        enumerable: false,
-                        value: core
+        return ((component) => {
+
+            const loadModules = (component, core) => {
+                const body = component.get("v.body");
+                body.filter(component => {
+                    return component.isInstanceOf("c:lightningCoreModule");
+                })
+                    .forEach(module => {
+                        let exported = null;
+                        try {
+                            exported = module.export()
+                        } catch (e) {
+                            console.error(`Core:\nModule ${module.getName()} does not implement export method\n${e}`);
+                            return;
+                        }
+                        if (!exported || !Array.isArray(exported) || exported.length !== 2 || typeof exported[0] !== 'string') {
+                            console.error(`Core:\nModule ${module.getName()} has wrong return format.\nReturn format should be [module_name, {exported_classes}]`);
+                            return;
+                        }
+                        if (core[exported[0]]) {
+                            console.error(`Core:\n${exported[0]} namespace from module ${module.getName()} is already defined in lightning-core. Please, consider other module name`);
+                            return;
+                        }
+                        core[exported[0]] = exported[1];
                     });
+            };
+
+            return {
+                init: () => {
+                    if ($A.util.isUndefinedOrNull(window.core)) {
+                        Object.defineProperty(window, "core", {
+                            writable: false,
+                            configurable: false,
+                            enumerable: false,
+                            value: core
+                        });
+                        loadModules(component, core);
+                    }
                 }
-            }
-        };
+            };
+        })(component);
 
     }
 })
