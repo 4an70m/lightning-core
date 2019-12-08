@@ -121,13 +121,13 @@
             fire() {
                 try {
                     if (new Environment().isApp()) {
-                        throw new Error("lightning:notificationsLibrary is not supported in App");
+                        throw new Error("$A.e.force:showToast is not supported in App");
                     }
                     const toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams(this.params);
                     toastEvent.fire();
                 } catch (e) {
-                    console.error(`Core:\nRunning lightning:notificationsLibrary -> showToast() raised an exception:\n${e}`)
+                    console.error(`Core:\nRunning e.force:showToast raised an exception:\n${e}`)
                 }
             }
         }
