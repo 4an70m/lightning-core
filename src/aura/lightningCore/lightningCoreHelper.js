@@ -1,5 +1,14 @@
 ({
 
+    /**
+     * Function to import lightning-core into the window object.<br/>
+     * Returns init() function, which should be explicitly called.
+     *
+     * @version 1.0
+     * @author github/4an70m
+     * @param cmp
+     * @returns {{init}}
+     */
     core: function (cmp) {
 
         const component = cmp;
