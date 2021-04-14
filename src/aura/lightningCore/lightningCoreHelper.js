@@ -1855,7 +1855,7 @@
                             .then((components) => {
                                 let body = null;
                                 let footer = null;
-                                if (components.length === 1) {
+                                if (components.length >= 1) {
                                     body = components[0];
                                 }
                                 if (components.length === 2) {
