@@ -512,7 +512,7 @@
              * @returns {LightningAction}
              */
             execute() {
-                new LightningPromise((resolve, reject) => {
+                return new LightningPromise((resolve, reject) => {
                     this.action.setCallback(this, result => {
                         let state = result.getState();
                         if (state === "SUCCESS") {
