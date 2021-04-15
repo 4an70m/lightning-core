@@ -410,6 +410,9 @@
                         if (errors && errors[0] && errors[0].message) {
                             message = errors[0].message;
                         }
+                        if (errors && errors[0] && errors[0].pageErrors && errors[0].pageErrors[0]) {
+                            message = errors[0].pageErrors[0].message;
+                        }
                     } else if (state === "INCOMPLETE") {
                         message = ServerAction.messageIncompleteAction;
                     }
