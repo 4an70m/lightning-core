@@ -890,19 +890,13 @@
              * @param pageReference
              * @param preNavigateCallback
              */
-            navigate(pageReference, preNavigateCallback = null) {
+            navigate(pageReference) {
                 if (!(pageReference instanceof PageReference)) {
                     const message = `Core:\nnavigate() method should be called with PageReference parameter\n`;
                     console.error(message);
                     throw new Error(message);
                 }
-                this.library.generateUrl(pageReference.toPageReference())
-                    .then($A.getCallback((url) => {
-                        if (preNavigateCallback) {
-                            url = preNavigateCallback(url);
-                        }
-                        this.library.navigate(url);
-                    }))
+                this.library.navigate(pageReference.toPageReference())
                     .catch($A.getCallback((error) => {
                         console.error(`Core:\nUrl generation encountered an error: \n ${error}\n`);
                     }));
